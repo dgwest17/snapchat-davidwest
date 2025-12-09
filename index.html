@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Open Graph tags for iMessage preview -->
+    <meta property="og:title" content="David West on Snapchat">
+    <meta property="og:description" content="Add me on Snapchat">
+    <meta property="og:image" content="https://snap-davidwest.vercel.app/snapcode.jpeg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://snap-davidwest.vercel.app">
+    
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="David West on Snapchat">
+    <meta name="twitter:description" content="Add me on Snapchat">
+    <meta name="twitter:image" content="https://snap-davidwest.vercel.app/snapcode.jpeg">
+    
+    <title>snap-davidwest</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1em;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .upload-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+        
+        .upload-btn {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .upload-btn input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .upload-btn label {
+            display: inline-block;
+            padding: 8px 16px;
+            background: transparent;
+            color: #999;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: 400;
+            transition: color 0.2s;
+            text-decoration: underline;
+        }
+        
+        .upload-btn:hover label {
+            color: #667eea;
+        }
+        
+        .display-section {
+            text-align: center;
+        }
+        
+        .display-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        #displayImage {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+            margin: 0 auto;
+        }
+        
+        #displayImage.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .no-image {
+            color: #999;
+            font-size: 1.1em;
+            padding: 60px 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+        
+        .no-image.hidden {
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="display-section">
+                <img id="displayImage" alt="Uploaded photo">
+                <div id="noImage" class="no-image">No photo uploaded yet</div>
+            </div>
+            
+            <div class="upload-section">
+                <div class="upload-btn">
+                    <label for="fileInput">upload photo</label>
+                    <input type="file" id="fileInput" accept="image/*">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load and display the current photo on page load
+        function loadCurrentPhoto() {
+            const savedImage = localStorage.getItem('uploadedPhoto');
+            const savedTime = localStorage.getItem('uploadedPhotoTime');
+            const displayImage = document.getElementById('displayImage');
+            const noImage = document.getElementById('noImage');
+            const timestamp = document.getElementById('timestamp');
+            
+            if (savedImage) {
+                displayImage.src = savedImage;
+                displayImage.classList.add('show');
+                noImage.classList.add('hidden');
+                
+                if (savedTime) {
+                    const date = new Date(parseInt(savedTime));
+                    timestamp.textContent = `Uploaded: ${date.toLocaleString()}`;
+                }
+            } else {
+                // Show default Snapchat image
+                displayImage.src = 'snapcode.jpeg';
+                displayImage.classList.add('show');
+                noImage.classList.add('hidden');
+            }
+        }
+        
+        // Handle file upload
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    const imageData = event.target.result;
+                    
+                    // Save to localStorage
+                    localStorage.setItem('uploadedPhoto', imageData);
+                    
+                    // Display the image
+                    loadCurrentPhoto();
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Load current photo when page loads
+        loadCurrentPhoto();
+    </script>
+</body>
+</html>
